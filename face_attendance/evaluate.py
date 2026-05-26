@@ -137,5 +137,62 @@ def run_evaluation():
             f.write(f"{r['radius']},{r['neighbors']},{r['grid_x']},{r['grid_y']},{r['accuracy']:.2f},{r['avg_confidence']:.2f},{r['train_time']:.4f}\n")
     print("\n✅ Đã xuất chi tiết ra file 'evaluation_results.csv'.")
 
+    # Vẽ biểu đồ nếu có cài matplotlib
+    try:
+        import matplotlib.pyplot as plt
+        
+        # Chuẩn bị dữ liệu
+        labels = [f"R:{r['radius']}, G:{r['grid_x']}x{r['grid_y']}" for r in results]
+        accuracies = [r['accuracy'] for r in results]
+        confidences = [r['avg_confidence'] for r in results]
+        
+        x = np.arange(len(labels))
+        width = 0.35
+        
+        fig, ax1 = plt.subplots(figsize=(10, 6))
+        
+        # Vẽ cột Độ chính xác (Accuracy) - Trục trái
+        rects1 = ax1.bar(x - width/2, accuracies, width, label='Accuracy (%)', color='#4CAF50')
+        ax1.set_ylabel('Độ chính xác (%)', color='#4CAF50', fontweight='bold')
+        ax1.tick_params(axis='y', labelcolor='#4CAF50')
+        ax1.set_ylim([0, max(accuracies) + 5 if max(accuracies) + 5 <= 110 else 110])
+        
+        # Vẽ cột Độ sai số (Confidence) - Trục phải
+        ax2 = ax1.twinx()
+        rects2 = ax2.bar(x + width/2, confidences, width, label='Avg Confidence (Sai số)', color='#F44336')
+        ax2.set_ylabel('Sai số TB (Càng thấp càng tốt)', color='#F44336', fontweight='bold')
+        ax2.tick_params(axis='y', labelcolor='#F44336')
+        
+        # Tiêu đề và nhãn
+        plt.title('ĐÁNH GIÁ HIỆU NĂNG THUẬT TOÁN LBPH VỚI CÁC THÔNG SỐ KHÁC NHAU', fontweight='bold', pad=20)
+        ax1.set_xticks(x)
+        ax1.set_xticklabels(labels)
+        
+        # Hiển thị số liệu trên đỉnh cột
+        def autolabel(rects, ax, is_acc=True):
+            for rect in rects:
+                height = rect.get_height()
+                ax.annotate(f'{height:.1f}{"%" if is_acc else ""}',
+                            xy=(rect.get_x() + rect.get_width() / 2, height),
+                            xytext=(0, 3),  # 3 points vertical offset
+                            textcoords="offset points",
+                            ha='center', va='bottom', fontsize=9)
+                            
+        autolabel(rects1, ax1, True)
+        autolabel(rects2, ax2, False)
+        
+        fig.tight_layout()
+        
+        # Lưu file
+        chart_file = "evaluation_chart.png"
+        plt.savefig(chart_file, dpi=300, bbox_inches='tight')
+        print(f"📈 Đã vẽ xong biểu đồ và lưu thành file ảnh: '{chart_file}'")
+        print("   👉 Hãy dùng ảnh này chèn vào slide thuyết trình nhé!")
+        
+    except ImportError:
+        print("\n💡 Tip: Để tự động vẽ biểu đồ so sánh cho slide, hãy cài thêm thư viện bằng lệnh:")
+        print("   pip install matplotlib")
+        print("   Sau đó chạy lại lệnh 'python face_attendance/evaluate.py' nhé!")
+
 if __name__ == "__main__":
     run_evaluation()
