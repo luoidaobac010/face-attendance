@@ -1,0 +1,4 @@
+Radius,Neighbors,GridX,GridY,Accuracy_%,Avg_Confidence,Train_Time_s
+1,8,8,8,100.00,37.18,0.3854
+1,8,10,10,100.00,72.56,0.6086
+2,8,8,8,100.00,38.12,0.3674

@@ -30,6 +30,9 @@ def mark_once(name):
     """
     try:
         df = pd.read_excel(EXCEL)
+        expected_cols = ["Tên", "Ngày", "Thời gian"]
+        if list(df.columns) != expected_cols:
+            df = pd.DataFrame(columns=expected_cols)
     except Exception:
         df = pd.DataFrame(columns=["Tên", "Ngày", "Thời gian"])
 
@@ -179,6 +182,15 @@ def train():
         print("❌ Không có dữ liệu để train!")
         return None
 
+    if len(label_map) < 2:
+        print("\n" + "!" * 60)
+        print("❌ LỖI HUẤN LUYỆN: Hệ thống cần ít nhất 2 người khác nhau để huấn luyện mô hình SVM!")
+        print("💡 Giải thích: Thuật toán SVM cần tìm ranh giới phân tách giữa các nhóm khuôn mặt.")
+        print("   Nếu chỉ có 1 người, mô hình không thể tìm được ranh giới để phân lớp.")
+        print("👉 Vui lòng đăng ký thêm người thứ hai (lựa chọn 'R') để hệ thống hoạt động.")
+        print("!" * 60 + "\n")
+        return None
+
     print(f"📊 Số ảnh: {len(X)} | Số người: {len(label_map)}")
 
     # PCA: giảm chiều dữ liệu
@@ -309,4 +321,5 @@ def main():
     else:
         print("❌ Lựa chọn không hợp lệ!")
 
-main()
+if __name__ == "__main__":
+    main()
